@@ -1,16 +1,20 @@
 class Song < ActiveRecord::Base
-  validate :rebundent_title, :toggle_released_time
   validates :title, presence: true
+  validates :title, uniqueness: {
+    scope: [:release_year, :artist_name],
+    message: "cannot be repeated by the same artist in the same year"
+  }
   validates :released, inclusion: { in: [true, false] }
   validates :artist_name, presence: true
 
-  def rebundent_title
-    self.errors.add(:title, 'rebundent') unless Song.find_by(artist_name: self.artist_name, release_year: self.release_year) == nil
+  with_options if: :released? do |song|
+    song.validates :release_year, presence: true
+    song.validates :release_year, numericality: {
+      less_than_or_equal_to: Date.today.year
+    }
   end
 
-  def toggle_released_time
-    if self.released && (self.release_year.nil? || self.release_year > Time.now.year)
-      self.errors.add(:released_year, "wrong released year")
-    end
+  def released?
+    released
   end
 end
