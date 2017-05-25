@@ -41,4 +41,8 @@ class SongsController < ApplicationController
       render :edit
     end
   end
+
+  def song_params(*args)
+    params.require(:song).permit(*args)
+  end
 end
