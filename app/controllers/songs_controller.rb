@@ -43,4 +43,8 @@ class SongsController < ApplicationController
       :title, :release_year, :released, :genre, :artist_name
     )
   end
+
+  def set_song
+    @song = Song.find(params[:id])
+  end
 end
